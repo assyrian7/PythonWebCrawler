@@ -6,12 +6,14 @@ class Spider:
 
 	base_url = ''
 	domain_name = ''
+	file_name = ''
 	queue = set()
 	crawled = set()
 	
-	def __init__(self, base_url, domain_name):
+	def __init__(self, base_url, domain_name, file_name):
 		Spider.base_url = base_url
 		Spider.domain_name = domain_name
+		Spider.file_name = file_name
 		Spider.queue.add(Spider.base_url)
 		self.crawl('First Spider', Spider.base_url)
 		
@@ -23,6 +25,7 @@ class Spider:
 			Spider.add_links_to_queue(Spider.get_links(url))
 			Spider.queue.remove(url)
 			Spider.crawled.add(url)
+			Spider.write_crawled_to_file(Spider.file_name)
 			
 	@staticmethod	
 	def add_links_to_queue(links):
@@ -47,3 +50,9 @@ class Spider:
 			print(str(e))
 			return set()
 		return link_finder.page_links()
+		
+	@staticmethod
+	def write_crawled_to_file(file_name):
+		with open(file_name, "w") as f:
+			for link in sorted(Spider.crawled):
+				f.write(link + "\n")
